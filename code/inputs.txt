@@ -1,0 +1,26 @@
+INPUT 1:
+
+BinaryTree bt = new BinaryTree(8);
+bt.insert(bt.root, 5);
+bt.insert(bt.root, 10);
+bt.insert(bt.root, 3);
+bt.insert(bt.root, 6);
+bt.insert(bt.root, 9);
+bt.insert(bt.root, 2);
+bt.insert(bt.root, 4);
+bt.insert(bt.root, 7);
+bt.insert(bt.root, 1);
+bt.insert(bt.root, 11);
+
+**********************************************
+
+INPUT 2:
+
+BinaryTree bt = new BinaryTree(2);
+bt.insert(bt.root, 1);
+bt.insert(bt.root, 5);
+bt.insert(bt.root, 3);
+bt.insert(bt.root, 6);
+bt.insert(bt.root, 4);
+
+**********************************************
