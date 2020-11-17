@@ -1,4 +1,5 @@
 package code;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -214,28 +215,58 @@ public class BinaryTree {
         return (int) result;
       }
 
+    public void buildLeftForearm(Node root)
+  { 
+    Node walkerLeft = root.left;
+    while(walkerLeft.left != null){
+        rightRotation(walkerLeft);
+        walkerLeft = root.left;
+    }
+
+    walkerLeft = root.left;
+    while(walkerLeft != null){
+        if(walkerLeft.left != null){
+            rightRotation(walkerLeft);
+            walkerLeft = walkerLeft.right;
+        }
+        else{
+            walkerLeft = walkerLeft.right;
+        }
+    }
+  }
+
+    public void buildRightForearm(Node root)
+    { 
+        Node walkerRight = root.right;
+        while(walkerRight.right != null){
+            leftRotation(walkerRight);
+            walkerRight = root.right;
+        }
+    walkerRight = root.right;
+    while(walkerRight != null){
+        if(walkerRight.right != null){
+            leftRotation(walkerRight);
+            walkerRight = walkerRight.left;
+        }
+        else{
+            walkerRight = walkerRight.left;
+        }
+    }
+    }  
+
     public static void main(String[] args) {
-        BinaryTree bt = new BinaryTree(2);
-        bt.insert(bt.root, 1);
-        bt.insert(bt.root, 5);
-        bt.insert(bt.root, 3);
-        bt.insert(bt.root, 6);
-        bt.insert(bt.root, 4);
+        BinaryTree bt = new BinaryTree(4);
+        bt.insert(bt.root,2);
+        bt.insert(bt.root,7);
+        bt.insert(bt.root,1);
+        bt.insert(bt.root,3);
+        bt.insert(bt.root,6);
+        bt.insert(bt.root,9);
+        bt.insert(bt.root,5);
+        bt.insert(bt.root,8);
+        bt.insert(bt.root,10);
         
         System.out.println("Root is equal to :::::::"+bt.root.value);
-        bt.printLevelOrder(bt.root);
-
-        // print childParentMapping (before rotation)
-        System.out.println("**************BEFORE LEFT ROTATION**************");
-        for (Node node : bt.childParentMapping.keySet()) {
-            if(bt.childParentMapping.get(node) == null){
-                System.out.println(node.value + " => " + null);
-            }
-            else{
-            System.out.println(node.value + " => " + bt.childParentMapping.get(node).value);
-            }
-        }
-
         bt.printLevelOrder(bt.root);
 
         Node nodeToRotateAlong = bt.findNode(2);
@@ -243,17 +274,6 @@ public class BinaryTree {
         if(nodeToRotateAlong!=null){
             bt.leftRotation(nodeToRotateAlong);
         }
-
-        // print childParentMapping (after rotation)
-        // System.out.println("**************AFTER LEFT ROTATION**************");
-        // for (Node node : bt.childParentMapping.keySet()) {
-        //     if(bt.childParentMapping.get(node) == null){
-        //         System.out.println(node.value + " => " + null);
-        //     }
-        //     else{
-        //     System.out.println(node.value + " => " + bt.childParentMapping.get(node).value);
-        //     }
-        // }
 
         bt.printLevelOrder(bt.root);
 
@@ -263,27 +283,12 @@ public class BinaryTree {
             bt.rightRotation(nodeToRotateAlong);
         }
 
-        // print childParentMapping (after rotation)
-        // System.out.println("**************AFTER RIGHT ROTATION**************");
-        // for (Node node : bt.childParentMapping.keySet()) {
-        //     if(bt.childParentMapping.get(node) == null){
-        //         System.out.println(node.value + " => " + null);
-        //     }
-        //     else{
-        //     System.out.println(node.value + " => " + bt.childParentMapping.get(node).value);
-        //     }
-        // }
-
         bt.printLevelOrder(bt.root);
 
         int rootTval = bt.findRoot(bt.root);
 
-        System.out.println("LOLOLOL");
         Node rootT = bt.findNode(rootTval);
-
-    //    for (int i = 0; i < 10; i++) {
-        System.out.println("LOLOLOL");
-           
+        
        while(bt.childParentMapping.get(rootT) != null){
            
             // if left child, then right rotation
@@ -299,15 +304,58 @@ public class BinaryTree {
                 System.out.println("Performed left rotation");
             }
             bt.printLevelOrder(bt.root);
-            // for (Node node : bt.childParentMapping.keySet()) {
-            //     if(bt.childParentMapping.get(node) == null){
-            //         System.out.println(node.value + " => " + null);
-            //     }
-            //     else{
-            //     System.out.println(node.value + " => " + bt.childParentMapping.get(node).value);
-            //     }
-            // }
+            
         }
+
+        bt.buildLeftForearm(bt.root);
+        bt.buildRightForearm(bt.root);
+
+        System.out.println("Tree after forearm building:\n:::::\n");
+        bt.printLevelOrder(bt.root);
+
+        // building left subtree AL
+        Node walker = bt.root.left;
+        Node walkerRight = walker.right.right;
+        Node follower = walker;
+
+        while(walkerRight != null){
+            while(walker != null && walker.right != null){
+                if(walkerRight != null){
+                    walkerRight = walker.right.right;
+                }
+                bt.leftRotation(follower);
+                walker = walkerRight;
+                follower = walker;
+            }
+            walker = bt.root.left;
+            walkerRight = walker.right.right;
+            follower = walker;
+        }
+
+        System.out.println("After left subtree generation:\n");
+        bt.printLevelOrder(bt.root);
+
+        // building right subtree AR
+        walker = bt.root.right;
+        Node walkerLeft = walker.left.left;
+        follower = walker;
+
+        while(walkerLeft != null){
+            while(walker != null && walker.left != null){
+                if(walkerLeft != null){
+                    walkerLeft = walker.left.left;
+                }
+                bt.rightRotation(follower);
+                walker = walkerLeft;
+                follower = walker;
+            }
+            walker = bt.root.right;
+            walkerLeft = walker.left.left;
+            follower = walker;
+        }
+
+        System.out.println("After right subtree generation:\n");
+        bt.printLevelOrder(bt.root);
 
     }
 }

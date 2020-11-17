@@ -1,0 +1,12 @@
+1. For printing childParentMapping
+
+for (Node node : bt.childParentMapping.keySet()) {
+    if(bt.childParentMapping.get(node) == null){
+        System.out.println(node.value + " => " + null);
+    }
+    else{
+    System.out.println(node.value + " => " + bt.childParentMapping.get(node).value);
+    }
+}
+
+2. 
