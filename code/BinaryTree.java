@@ -1,9 +1,14 @@
 package code;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class BinaryTree {
     Node root;
@@ -265,6 +270,28 @@ public class BinaryTree {
         printInOrderTraversal(root.right);
     }
 
+    public Set<Integer> ListifyTree(Node root){
+        if(root == null){
+            return null;
+        }
+
+        Set<Integer> nodeList = new HashSet<Integer>();
+        // Set<Integer> leftList = new TreeSet<Integer>();
+        // Set<Integer> rightList = new TreeSet<Integer>();
+        nodeList.add(root.value);
+        Set<Integer> leftList = ListifyTree(root.left);
+        Set <Integer> rightList = ListifyTree(root.right);
+        if(leftList != null){
+            nodeList.addAll(leftList);
+        }
+
+        if(rightList != null){
+            nodeList.addAll(rightList);
+        }
+        System.out.println(nodeList.toString());
+        return nodeList;
+    }
+
     public static boolean isIntervalSame(Node node1, Node node2) {
         if (node1.startInterval == node2.startInterval) {
             if (node1.endInterval == node2.endInterval) {
@@ -276,13 +303,29 @@ public class BinaryTree {
         return false;
     }
 
+    boolean identicalTrees(Node a, Node b)  
+    { 
+        /*1. both empty */
+        if (a == null && b == null) 
+            return true; 
+              
+        /* 2. both non-empty -> compare them */
+        if (a != null && b != null)  
+            return (a.value == b.value 
+                    && identicalTrees(a.left, b.left) 
+                    && identicalTrees(a.right, b.right)); 
+   
+        /* 3. one empty, one not -> false */
+        return false; 
+    } 
+
+// TODO
     public void findNodesWithSameIntervals(Node root1, Node root2) {
         while (root1 != null) {
             if (isIntervalSame(root1, root2)) {
                 System.out.println("Found an equivalent " + root1.value + " - - - " + root2.value);
             }
         }
-
     }
 
     public static void main(String[] args) {
@@ -308,6 +351,44 @@ public class BinaryTree {
         s.insert(s.root, 5);
         s.insert(s.root, 8);
         s.insert(s.root, 10);
+
+        System.out.println("The tree contains the following nodes: "+s.ListifyTree(s.root).toString());
+
+        Set<Integer> nodeSet = s.ListifyTree(s.root);
+        
+        List<Integer> notRotateList = new ArrayList<Integer>();
+        for (Integer integer : nodeSet) {
+            if(isIntervalSame(s.findNode(integer), t.findNode(integer))){
+                // add to notRotate list
+                notRotateList.add(integer);
+            }
+        }
+        System.out.println("THE NOT ROTATE LIST IS AS FOLLOWS");
+        System.out.println(notRotateList.toString());
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
+        List<Integer> maxEqSubtreeList = new ArrayList<Integer>();
+
+        for (Integer integer : notRotateList) {
+            // if parent of element in notrotatelist found in notrotatelist, remove the element
+            // since it won't be contributing to the max eq subtree
+            if(notRotateList.contains(s.childParentMapping.get(s.findNode(integer)).value)){
+                continue;
+            }
+            else{
+                maxEqSubtreeList.add(integer);
+            }
+        }
+
+        System.out.println("THE NOT ROTATE LIST FOR MAX EQ SUBTREES IS AS FOLLOWS");
+        System.out.println(maxEqSubtreeList.toString());
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
+
 
         isIntervalSame(s.findNode(4), t.findNode(7));
 
