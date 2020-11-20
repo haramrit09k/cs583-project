@@ -11,10 +11,9 @@ public class BinaryTree {
     private Comparator<Integer> comparator;
     int height;
 
-
-    public BinaryTree(int data){
+    public BinaryTree(int data) {
         Node root = new Node(data);
-        if(this.root == null && root != null){
+        if (this.root == null && root != null) {
             this.root = root;
         }
         childParentMapping = new HashMap<Node, Node>();
@@ -23,9 +22,9 @@ public class BinaryTree {
         this.height = height(root);
     }
 
-    public void updateInterval(Node node){
+    public void updateInterval(Node node) {
         Node temp = node;
-        while(temp != null){
+        while (temp != null) {
             node.startInterval = temp.value;
             temp = temp.left;
         }
@@ -37,38 +36,36 @@ public class BinaryTree {
         }
     }
 
-    public Node insert(Node root, int data){
-        if(root == null){
+    public Node insert(Node root, int data) {
+        if (root == null) {
             root = new Node(data);
-        }
-        else{
-            if(data <= root.value){
+        } else {
+            if (data <= root.value) {
                 root.left = insert(root.left, data);
                 childParentMapping.put(root.left, root);
-            }
-            else{
+            } else {
                 root.right = insert(root.right, data);
                 childParentMapping.put(root.right, root);
             }
         }
 
         updateInterval(root);
-        
+
         return root;
     }
 
-    public void printLevelOrder(Node root){
+    public void printLevelOrder(Node root) {
         Queue<Node> q = new LinkedList<Node>();
         q.add(root);
-        while(!q.isEmpty()){
+        while (!q.isEmpty()) {
             Node temp = q.poll();
-            System.out.print(temp.value+" ");
+            System.out.print(temp.value + " ");
 
-            if(temp.left != null){
+            if (temp.left != null) {
                 q.add(temp.left);
             }
-            
-            if(temp.right != null){
+
+            if (temp.right != null) {
                 q.add(temp.right);
             }
         }
@@ -83,7 +80,7 @@ public class BinaryTree {
         }
     }
 
-    public Node findNode(int val){
+    public Node findNode(int val) {
         for (Node n = root; n != null;) {
             int comparisonResult = compare(val, n.value);
             if (comparisonResult == 0) {
@@ -97,31 +94,30 @@ public class BinaryTree {
         return null;
     }
 
-    public void leftRotation(Node x){
-        if(x.right == null){
+    public void leftRotation(Node x) {
+        if (x.right == null) {
             return;
-        }
-        else{
+        } else {
             Node oldRight = x.right;
             x.right = oldRight.left;
             childParentMapping.put(oldRight.left, x);
 
-            if(childParentMapping.get(x) == null){
+            if (childParentMapping.get(x) == null) {
                 root = oldRight;
-                if(oldRight!= null){
+                if (oldRight != null) {
                     childParentMapping.put(oldRight, null);
                 }
-            }
-            else if(childParentMapping.get(x).left == x){
+            } else if (childParentMapping.get(x).left == x) {
                 childParentMapping.get(x).left = oldRight;
-                if(oldRight!= null){
+                if (oldRight != null) {
                     childParentMapping.put(oldRight, childParentMapping.get(x));
-                }        }
-            else{
+                }
+            } else {
                 childParentMapping.get(x).right = oldRight;
-                if(oldRight!= null){
+                if (oldRight != null) {
                     childParentMapping.put(oldRight, childParentMapping.get(x));
-                }        }
+                }
+            }
             oldRight.left = x;
             childParentMapping.put(x, oldRight);
 
@@ -130,33 +126,30 @@ public class BinaryTree {
         }
     }
 
-
-    public void rightRotation(Node x){
-        if(x.left == null){
+    public void rightRotation(Node x) {
+        if (x.left == null) {
             return;
-        }
-        else{
+        } else {
             Node oldLeft = x.left;
             x.left = oldLeft.right;
             childParentMapping.put(oldLeft.right, x);
-    
-            if(childParentMapping.get(x) == null){
+
+            if (childParentMapping.get(x) == null) {
                 root = oldLeft;
-                if(oldLeft != null){
+                if (oldLeft != null) {
                     childParentMapping.put(oldLeft, null);
                 }
-            }
-            else if(childParentMapping.get(x).right == x){
+            } else if (childParentMapping.get(x).right == x) {
                 childParentMapping.get(x).right = oldLeft;
-                if(oldLeft!= null){
+                if (oldLeft != null) {
+                    childParentMapping.put(oldLeft, childParentMapping.get(x));
+                }
+            } else {
+                childParentMapping.get(x).left = oldLeft;
+                if (oldLeft != null) {
                     childParentMapping.put(oldLeft, childParentMapping.get(x));
                 }
             }
-            else{
-                childParentMapping.get(x).left = oldLeft;
-                if(oldLeft!= null){
-                    childParentMapping.put(oldLeft, childParentMapping.get(x));
-                }        }
             oldLeft.right = x;
             childParentMapping.put(x, oldLeft);
 
@@ -165,133 +158,158 @@ public class BinaryTree {
         }
     }
 
-    public void printInterval(Node node){
-        System.out.println("Node interval for node "+node.value+" is ("+node.startInterval+", "+node.endInterval+")\n");
+    public void printInterval(Node node) {
+        System.out.println("Node interval for node " + node.value + " is (" + node.startInterval + ", "
+                + node.endInterval + ")\n");
     }
 
-    private static int count(Node tree)
-    {
-      int c =  1;             
-      if (tree == null)
-          return 0;
-      else
-      {
-          c += count(tree.left);
-          c += count(tree.right);
-          return c;
-      }
-    }
-  
-    private static int height(Node root){
-        if(root == null){
+    private static int count(Node tree) {
+        int c = 1;
+        if (tree == null)
             return 0;
-        }
-        else{
-            return  1 + Math.max(height(root.left), height(root.right));
+        else {
+            c += count(tree.left);
+            c += count(tree.right);
+            return c;
         }
     }
 
-    private static int calculateH(Node root){
-        if(root == null){
+    private static int height(Node root) {
+        if (root == null) {
             return 0;
+        } else {
+            return 1 + Math.max(height(root.left), height(root.right));
         }
-        else{
+    }
+
+    private static int calculateH(Node root) {
+        if (root == null) {
+            return 0;
+        } else {
             int count = count(root);
             return (int) Math.floor(Math.log(count) / Math.log(2)) + 1;
         }
     }
 
-    public int findRoot(Node root){
+    public int findRoot(Node root) {
         // int h = height(root); // find height
         int h = calculateH(root);
         int n = count(root); // find num of vertices
 
-        System.out.println("height = "+h);
-        System.out.println("count = "+n);
+        System.out.println("height = " + h);
+        System.out.println("count = " + n);
         System.out.println();
-       
-        int twoHMinusOne = (int) Math.pow(2, h-1);
-        int twoHMinusTwo = (int) Math.pow(2, h-2);
+
+        int twoHMinusOne = (int) Math.pow(2, h - 1);
+        int twoHMinusTwo = (int) Math.pow(2, h - 2);
         int twoH = (int) Math.pow(2, h);
-        
+
         double result = 0;
 
-        System.out.println("twoHMinusOne = "+twoHMinusOne);
-        System.out.println("twoHMinusOne = "+twoHMinusTwo);
-        System.out.println("twoH = "+twoH);
+        System.out.println("twoHMinusOne = " + twoHMinusOne);
+        System.out.println("twoHMinusOne = " + twoHMinusTwo);
+        System.out.println("twoH = " + twoH);
 
-        if(n >= twoHMinusOne && n <= twoHMinusOne + twoHMinusTwo - 2){
+        if (n >= twoHMinusOne && n <= twoHMinusOne + twoHMinusTwo - 2) {
             System.out.println("condition 1 exec");
             result = (n - twoHMinusTwo + 1);
-        }
-        else if(twoHMinusOne + twoHMinusTwo - 1 <= n && n <= twoH - 1){
+        } else if (twoHMinusOne + twoHMinusTwo - 1 <= n && n <= twoH - 1) {
             System.out.println("condition 2 exec");
             result = twoHMinusOne;
         }
-        System.out.println("*_*_*_*_*_*_*_*_*_rootT = "+result);
+        System.out.println("*_*_*_*_*_*_*_*_*_rootT = " + result);
         return (int) result;
-      }
-
-    public void buildLeftForearm(Node root)
-  { 
-    Node walkerLeft = root.left;
-    while(walkerLeft.left != null){
-        rightRotation(walkerLeft);
-        walkerLeft = root.left;
     }
 
-    walkerLeft = root.left;
-    while(walkerLeft != null){
-        if(walkerLeft.left != null){
+    public void buildLeftForearm(Node root) {
+        Node walkerLeft = root.left;
+        while (walkerLeft.left != null) {
             rightRotation(walkerLeft);
-            walkerLeft = walkerLeft.right;
+            walkerLeft = root.left;
         }
-        else{
-            walkerLeft = walkerLeft.right;
+
+        walkerLeft = root.left;
+        while (walkerLeft != null) {
+            if (walkerLeft.left != null) {
+                rightRotation(walkerLeft);
+                walkerLeft = walkerLeft.right;
+            } else {
+                walkerLeft = walkerLeft.right;
+            }
         }
     }
-  }
 
-    public void buildRightForearm(Node root)
-    { 
+    public void buildRightForearm(Node root) {
         Node walkerRight = root.right;
-        while(walkerRight.right != null){
+        while (walkerRight.right != null) {
             leftRotation(walkerRight);
             walkerRight = root.right;
         }
-    walkerRight = root.right;
-    while(walkerRight != null){
-        if(walkerRight.right != null){
-            leftRotation(walkerRight);
-            walkerRight = walkerRight.left;
-        }
-        else{
-            walkerRight = walkerRight.left;
+        walkerRight = root.right;
+        while (walkerRight != null) {
+            if (walkerRight.right != null) {
+                leftRotation(walkerRight);
+                walkerRight = walkerRight.left;
+            } else {
+                walkerRight = walkerRight.left;
+            }
         }
     }
-    }  
 
-    public void printInOrderTraversal(Node root){
-        if(root == null){
+    public void printInOrderTraversal(Node root) {
+        if (root == null) {
             return;
         }
         printInOrderTraversal(root.left);
-        System.out.print(root.value +" ");
+        System.out.print(root.value + " ");
         printInOrderTraversal(root.right);
     }
 
+    public static boolean isIntervalSame(Node node1, Node node2) {
+        if (node1.startInterval == node2.startInterval) {
+            if (node1.endInterval == node2.endInterval) {
+                System.out.println("YES, The intervals are the same :)");
+                return true;
+            }
+        }
+        System.out.println("BAZINGA!!!");
+        return false;
+    }
+
+    public void findNodesWithSameIntervals(Node root1, Node root2) {
+        while (root1 != null) {
+            if (isIntervalSame(root1, root2)) {
+                System.out.println("Found an equivalent " + root1.value + " - - - " + root2.value);
+            }
+        }
+
+    }
 
     public static void main(String[] args) {
-        // BinaryTree bt = new BinaryTree(2);
-        // bt.insert(bt.root,4);
-        // bt.insert(bt.root,7);
-        // bt.insert(bt.root,1);
-        // bt.insert(bt.root,3);
-        // bt.insert(bt.root,6);
-        // // bt.insert(bt.root,9);
-        // bt.insert(bt.root,5);
-        // // bt.insert(bt.root,8);
-        // // bt.insert(bt.root,10);
+
+        BinaryTree t = new BinaryTree(7);
+        t.insert(t.root, 4);
+        t.insert(t.root, 9);
+        t.insert(t.root, 2);
+        t.insert(t.root, 6);
+        t.insert(t.root, 8);
+        t.insert(t.root, 10);
+        t.insert(t.root, 1);
+        t.insert(t.root, 3);
+        t.insert(t.root, 5);
+
+        BinaryTree s = new BinaryTree(4);
+        s.insert(s.root, 2);
+        s.insert(s.root, 7);
+        s.insert(s.root, 1);
+        s.insert(s.root, 3);
+        s.insert(s.root, 6);
+        s.insert(s.root, 9);
+        s.insert(s.root, 5);
+        s.insert(s.root, 8);
+        s.insert(s.root, 10);
+
+        isIntervalSame(s.findNode(4), t.findNode(7));
 
         BinaryTree bt = new BinaryTree(2);
         bt.insert(bt.root, 1);
@@ -300,56 +318,31 @@ public class BinaryTree {
         bt.insert(bt.root, 6);
         bt.insert(bt.root, 4);
 
-        bt.printInterval(bt.findNode(2));
-        bt.printInterval(bt.findNode(1));
-        bt.printInterval(bt.findNode(5));
-        bt.printInterval(bt.findNode(3));
-        bt.printInterval(bt.findNode(6));
-        bt.printInterval(bt.findNode(4));
-        
-        System.out.println("INORDER TRAVERSAL IS:::-;-;-;-;-;-;-;-;");
-        bt.printInOrderTraversal(bt.root);
-        System.out.println("\n");
-
-        bt.rightRotation(bt.findNode(5));
-
-        System.out.println("AFTER ROTATION::::::::::::::::::::::::::");
-        bt.printInterval(bt.findNode(2));
-        bt.printInterval(bt.findNode(1));
-        bt.printInterval(bt.findNode(5));
-        bt.printInterval(bt.findNode(3));
-        bt.printInterval(bt.findNode(6));
-        bt.printInterval(bt.findNode(4));
-        
-        System.out.println("INORDER TRAVERSAL IS:::-;-;-;-;-;-;-;-;");
-        bt.printInOrderTraversal(bt.root);
-        System.out.println("\n");
-        
-        System.out.println("Root is equal to :::::::"+bt.root.value);
+        System.out.println("Root is equal to :::::::" + bt.root.value);
         bt.printLevelOrder(bt.root);
 
         // find rootT
         int rootTval = bt.findRoot(bt.root);
 
         Node rootT = bt.findNode(rootTval);
-        
+
         // get rootT to the top
-       while(bt.childParentMapping.get(rootT) != null){
-           
+        while (bt.childParentMapping.get(rootT) != null) {
+
             // if left child, then right rotation
-            if(rootT.value < bt.childParentMapping.get(rootT).value){
+            if (rootT.value < bt.childParentMapping.get(rootT).value) {
                 // right rotation
                 bt.rightRotation(bt.childParentMapping.get(rootT));
                 System.out.println("Performed right rotation");
             }
             // else if right child, then left rotation
-            else if(rootT.value > bt.childParentMapping.get(rootT).value){
+            else if (rootT.value > bt.childParentMapping.get(rootT).value) {
                 // left rotation
                 bt.leftRotation(bt.childParentMapping.get(rootT));
                 System.out.println("Performed left rotation");
             }
             bt.printLevelOrder(bt.root);
-            
+
         }
 
         // build left and right forearms
@@ -364,9 +357,9 @@ public class BinaryTree {
         Node walkerRight = walker.right.right;
         Node follower = walker;
 
-        while(walkerRight != null){
-            while(walker != null && walker.right != null){
-                if(walkerRight != null){
+        while (walkerRight != null) {
+            while (walker != null && walker.right != null) {
+                if (walkerRight != null) {
                     walkerRight = walker.right.right;
                 }
                 bt.leftRotation(follower);
@@ -386,9 +379,9 @@ public class BinaryTree {
         Node walkerLeft = walker.left.left;
         follower = walker;
 
-        while(walkerLeft != null){
-            while(walker != null && walker.left != null){
-                if(walkerLeft != null){
+        while (walkerLeft != null) {
+            while (walker != null && walker.left != null) {
+                if (walkerLeft != null) {
                     walkerLeft = walker.left.left;
                 }
                 bt.rightRotation(follower);
