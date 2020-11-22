@@ -1,6 +1,7 @@
 package code;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ public class BinaryTree {
     HashMap<Node, Node> childParentMapping;
     private Comparator<Integer> comparator;
     int height;
+    int countRotations;
 
     public BinaryTree(int data) {
         Node root = new Node(data);
@@ -24,6 +26,8 @@ public class BinaryTree {
         childParentMapping.put(root, null);
 
         this.height = height(root);
+
+        this.countRotations = 0;
     }
 
     public void updateInterval(Node node) {
@@ -127,6 +131,8 @@ public class BinaryTree {
 
             updateInterval(x);
             updateInterval(oldRight);
+
+            countRotations+=1;
         }
     }
 
@@ -159,6 +165,9 @@ public class BinaryTree {
 
             updateInterval(x);
             updateInterval(oldLeft);
+
+            countRotations+=1;
+
         }
     }
 
@@ -248,6 +257,38 @@ public class BinaryTree {
         }
     }
 
+    public void buildLeftForearmIdenticalSubtrees(Node root, List<Integer> maxIdSubtreeList) {
+        Node walkerLeft = root.left;
+        while (walkerLeft.left != null) {
+            if(maxIdSubtreeList.contains(walkerLeft.value) || maxIdSubtreeList.contains(walkerLeft.left.value)){
+                break;
+            }
+            rightRotation(walkerLeft);
+            walkerLeft = root.left;
+            printLevelOrder(root);
+        }
+
+        Node followerLeft = root.left;
+        walkerLeft = followerLeft.right;
+        while (walkerLeft != null) {
+            if (walkerLeft.left != null) {
+                if(maxIdSubtreeList.contains(walkerLeft.value) || maxIdSubtreeList.contains(walkerLeft.left.value)){
+                    walkerLeft = walkerLeft.right;
+                    followerLeft = followerLeft.right;
+                    continue;
+                }
+                rightRotation(walkerLeft);
+                walkerLeft = followerLeft.right;
+            } else {
+                walkerLeft = walkerLeft.right;
+                followerLeft = followerLeft.right;
+            }
+
+            printLevelOrder(root);
+        }
+    }
+
+
     public void buildRightForearm(Node root) {
         Node walkerRight = root.right;
         while (walkerRight.right != null) {
@@ -258,6 +299,33 @@ public class BinaryTree {
         walkerRight = followerRight.left;
         while (walkerRight != null) {
             if (walkerRight.right != null) {
+                leftRotation(walkerRight);
+                walkerRight = followerRight.left;
+            } else {
+                walkerRight = walkerRight.left;
+                followerRight = followerRight.left;
+            }
+        }
+    }
+
+    public void buildRightForearmIdenticalSubtrees(Node root, List<Integer> maxIdSubtreeList) {
+        Node walkerRight = root.right;
+        while (walkerRight.right != null) {
+            if(maxIdSubtreeList.contains(walkerRight.value) || maxIdSubtreeList.contains(walkerRight.right.value)){
+                break;
+            }
+            leftRotation(walkerRight);
+            walkerRight = root.right;
+        }
+        Node followerRight = root.right;
+        walkerRight = followerRight.left;
+        while (walkerRight != null) {
+            if (walkerRight.right != null) {
+                if(maxIdSubtreeList.contains(walkerRight.value) || maxIdSubtreeList.contains(walkerRight.right.value)){
+                    walkerRight = walkerRight.left;
+                    followerRight = followerRight.left;
+                    continue;
+                }
                 leftRotation(walkerRight);
                 walkerRight = followerRight.left;
             } else {
@@ -322,7 +390,6 @@ public class BinaryTree {
         return false;
     }
 
-    // TODO
     public void findNodesWithSameIntervals(Node root1, Node root2) {
         while (root1 != null) {
             if (isIntervalSame(root1, root2)) {
@@ -333,42 +400,50 @@ public class BinaryTree {
 
     public static void main(String[] args) {
 
-        BinaryTree t = new BinaryTree(7);
+        BinaryTree s = new BinaryTree(12);
+        s.insert(s.root, 8);
+        s.insert(s.root, 13);
+        s.insert(s.root, 4);
+        s.insert(s.root, 10);
+        s.insert(s.root, 2);
+        s.insert(s.root, 7);
+        s.insert(s.root, 9);
+        s.insert(s.root, 11);
+        s.insert(s.root, 1);
+        s.insert(s.root, 3);
+        s.insert(s.root, 6);
+        s.insert(s.root, 5);
+
+        // List<Integer> BinaryTreeNodes = new ArrayList<Integer>(Arrays.asList(12, 1, 4, 10, 17, 8, 3, 13, 20, 7, 14, 2, 11, 9, 16, 6, 18, 15, 19, 5));
+        // BinaryTree s = new BinaryTree(BinaryTreeNodes.get(0));
+        // for (int i = 1; i< BinaryTreeNodes.size(); i++) {
+        //     s.insert(s.root, BinaryTreeNodes.get(i));
+        // }
+
+        BinaryTree t = new BinaryTree(8);
         t.insert(t.root, 4);
-        t.insert(t.root, 9);
+        t.insert(t.root, 12);
         t.insert(t.root, 2);
         t.insert(t.root, 6);
-        t.insert(t.root, 8);
         t.insert(t.root, 10);
+        t.insert(t.root, 13);
         t.insert(t.root, 1);
         t.insert(t.root, 3);
         t.insert(t.root, 5);
+        t.insert(t.root, 7);
+        t.insert(t.root, 9);
+        t.insert(t.root, 11);
 
-        // BinaryTree s = new BinaryTree(41);
-        // s.insert(s.root, 20);
-        // s.insert(s.root, 65);
-        // s.insert(s.root, 11);
-        // s.insert(s.root, 29);
-        // s.insert(s.root, 50);
-        // s.insert(s.root, 91);
+        // BinaryTree s = new BinaryTree(4);
+        // s.insert(s.root, 3);
+        // s.insert(s.root, 7);
+        // s.insert(s.root, 2);
+        // s.insert(s.root, 6);
+        // s.insert(s.root, 9);
         // s.insert(s.root, 1);
-        // s.insert(s.root, 18);
-        // s.insert(s.root, 32);
-        // s.insert(s.root, 72);
-        // s.insert(s.root, 99);
-        // s.insert(s.root, 16);
-        // s.insert(s.root, 77);
-
-        BinaryTree s = new BinaryTree(4);
-        s.insert(s.root, 3);
-        s.insert(s.root, 7);
-        s.insert(s.root, 2);
-        s.insert(s.root, 6);
-        s.insert(s.root, 9);
-        s.insert(s.root, 1);
-        s.insert(s.root, 5);
-        s.insert(s.root, 8);
-        s.insert(s.root, 10);
+        // s.insert(s.root, 5);
+        // s.insert(s.root, 8);
+        // s.insert(s.root, 10);
 
         System.out.println("The tree contains the following nodes: " + s.ListifyTree(s.root).toString());
 
@@ -406,7 +481,208 @@ public class BinaryTree {
         System.out.println();
         System.out.println();
 
-        isIntervalSame(s.findNode(4), t.findNode(7));
+        List<Integer> maxIdSubtreeList = new ArrayList<Integer>();
+
+        for(Integer integer : maxEqSubtreeList){
+            if(identicalTrees(s.findNode(integer), t.findNode(integer))){
+                maxIdSubtreeList.add(integer);
+            }
+        }
+
+        System.out.println("THE NOT ROTATE LIST FOR MAX ID SUBTREES IS AS FOLLOWS");
+        System.out.println(maxIdSubtreeList.toString());
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
+        System.out.println("CHILD PARENT MAPPING FOR S:**********");
+        for (Node node : s.childParentMapping.keySet()) {
+            if(s.childParentMapping.get(node) == null){
+                System.out.println(node.value + " => " + null);
+            }
+            else{
+            System.out.println(node.value + " => " + s.childParentMapping.get(node).value);
+            }
+        }
+
+        // For A2:
+        // when building forearms, ignore nodes in maxIdSubtreeList
+
+        // find rootT
+        int rootTval = s.findRoot(s.root);
+
+        Node rootT = s.findNode(rootTval);
+
+        // get rootT to the top
+        while (s.childParentMapping.get(rootT) != null) {
+
+            // if left child, then right rotation
+            if (rootT.value < s.childParentMapping.get(rootT).value) {
+                // right rotation
+                s.rightRotation(s.childParentMapping.get(rootT));
+                System.out.println("Performed right rotation");
+            }
+            // else if right child, then left rotation
+            else if (rootT.value > s.childParentMapping.get(rootT).value) {
+                // left rotation
+                s.leftRotation(s.childParentMapping.get(rootT));
+                System.out.println("Performed left rotation");
+            }
+            s.printLevelOrder(s.root);
+
+        }
+
+        // build left and right forearms
+        s.buildLeftForearmIdenticalSubtrees(s.root, maxIdSubtreeList);
+        s.buildRightForearmIdenticalSubtrees(s.root, maxIdSubtreeList);
+
+        System.out.println("Tree after forearm building:\n:::::\n");
+        s.printLevelOrder(s.root);
+        System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+
+        // ************** Building left subtree AL ************** 
+        Node walker = s.root.left;
+        Node follower = walker;
+        Node countWalker = s.root.left;
+
+        int countLeftForearm = 0;
+        // find count of nodes in left forearm
+        while (countWalker != null) {
+            countLeftForearm += 1;
+            countWalker = countWalker.right;
+        }
+        // then find height of left forearm using formula calculateH
+        int heightLeftForearm = (int) Math.floor(Math.log(countLeftForearm) / Math.log(2));
+        countWalker = s.root.left;
+
+        // for i from 0 to height - 1
+        for (int i = 0; i <= heightLeftForearm; i++) {
+            int countLIteration = 0;
+            // find count for that iteration
+            while (countWalker != null) {
+                countLIteration += 1;
+                countWalker = countWalker.right;
+            }
+
+            // Alternate Rotation Policy
+
+            // only consider count - height nodes from top for rotation
+            int countDummy = i;
+            while (walker.right != null && countDummy < countLIteration) {
+                System.out.println("walker = " + walker.value);
+                System.out.println("follower = " + follower.value);
+
+                countDummy += 2;
+                if (countDummy > countLIteration) {
+                    break;
+                }
+                if(walker.right.right == null){
+                    walker = walker.right;
+                }
+                else{
+                    walker = walker.right.right;
+                }
+
+                if(follower.left != null){
+                    if(!maxIdSubtreeList.contains(follower.left.value) && !maxIdSubtreeList.contains(follower.right.value)){
+                        s.leftRotation(follower);
+                    }
+                }
+                else {
+                    if(!maxIdSubtreeList.contains(follower.right.value)){
+                        s.leftRotation(follower);
+                    }
+                } 
+                
+                s.printLevelOrder(s.root);
+                follower = walker;
+            }
+
+            // if value exceeds count - height, reinitialize walker and follower
+            walker = s.root.left;
+            follower = walker;
+            countWalker = s.root.left;
+        }
+
+        System.out.println("After left subtree generation:\n");
+        s.printLevelOrder(s.root);
+
+        // ************** Building right subtree AR ******************
+        walker = s.root.right;
+        follower = walker;
+        countWalker = s.root.right;
+
+        int countRightForearm = 0;
+        // find count of nodes in left forearm
+        while (countWalker != null) {
+            countRightForearm += 1;
+            countWalker = countWalker.left;
+        }
+        // then find height of left forearm using formula calculateH
+        int heightRightForearm = (int) Math.floor(Math.log(countRightForearm) / Math.log(2));
+        countWalker = s.root.right;
+
+        // for i from 0 to height - 1
+        for (int i = 0; i <= heightRightForearm; i++) {
+            int countRIteration = 0;
+            // find count for that iteration
+            while (countWalker != null) {
+                countRIteration += 1;
+                countWalker = countWalker.left;
+            }
+
+            // Alternate Rotation Policy
+            // only consider count - height nodes from top for rotation
+            int countDummy = i;
+            while (walker.left != null && countDummy < countRIteration) {
+                System.out.println("walker = " + walker.value);
+                System.out.println("follower = " + follower.value);
+
+                countDummy += 2;
+                if (countDummy > countRIteration) {
+                    break;
+                }
+                if(walker.left.left == null){
+                    walker = walker.left;
+                }
+                else{
+                    walker = walker.left.left;
+                }
+                if(follower.right != null){
+                    if(!maxIdSubtreeList.contains(follower.left.value) && !maxIdSubtreeList.contains(follower.right.value)){
+                        s.rightRotation(follower);
+                    }
+                }
+                else{
+                    if(!maxIdSubtreeList.contains(follower.left.value)){
+                        s.rightRotation(follower);
+                    }
+                } 
+                s.printLevelOrder(s.root);
+                follower = walker;
+            }
+
+            // if value exceeds count - height, reinitialize walker and follower
+            walker = s.root.right;
+            follower = walker;
+            countWalker = s.root.right;
+        }
+
+
+        System.out.println("After right subtree generation:\n");
+        s.printLevelOrder(s.root);
+
+
+        System.out.println("The number of rotations are: "+ s.countRotations);
+        // check if s and t are identical (after A1)
+
+
+
+
+
+
+
+        // isIntervalSame(s.findNode(4), t.findNode(7));
 
         // BinaryTree bt = new BinaryTree(2);
         // bt.insert(bt.root, 1);
@@ -426,27 +702,38 @@ public class BinaryTree {
         // bt.insert(bt.root, 8);
         // bt.insert(bt.root, 10);
 
-        BinaryTree bt = new BinaryTree(7);
-        bt.insert(bt.root, 4);
-        bt.insert(bt.root, 8);
-        bt.insert(bt.root, 2);
-        bt.insert(bt.root, 5);
-        bt.insert(bt.root, 12);
-        bt.insert(bt.root, 1);
-        bt.insert(bt.root, 3);
-        bt.insert(bt.root, 6);
-        bt.insert(bt.root, 11);
-        bt.insert(bt.root, 13);
-        bt.insert(bt.root, 9);
-        bt.insert(bt.root, 10);
+        List<Integer> BinaryTreeNodes = new ArrayList<Integer>(Arrays.asList(6, 2, 3, 13, 15, 1, 14, 10, 12, 8, 5, 7, 4, 16, 9, 11));
+        BinaryTree bt = new BinaryTree(BinaryTreeNodes.get(0));
+        for (int i = 1; i< BinaryTreeNodes.size(); i++) {
+            bt.insert(bt.root, BinaryTreeNodes.get(i));
+        }
+
+        // BinaryTree bt = new BinaryTree(7);
+        // bt.insert(bt.root, 4);
+        // bt.insert(bt.root, 8);
+        // bt.insert(bt.root, 2);
+        // bt.insert(bt.root, 5);
+        // bt.insert(bt.root, 12);
+        // bt.insert(bt.root, 1);
+        // bt.insert(bt.root, 3);
+        // bt.insert(bt.root, 6);
+        // bt.insert(bt.root, 11);
+        // bt.insert(bt.root, 13);
+        // bt.insert(bt.root, 9);
+        // bt.insert(bt.root, 10);
 
         System.out.println("Root is equal to :::::::" + bt.root.value);
         bt.printLevelOrder(bt.root);
 
-        // find rootT
-        int rootTval = bt.findRoot(bt.root);
 
-        Node rootT = bt.findNode(rootTval);
+        // **************************************************************
+        // *********************** A1 starts here ***********************
+        // **************************************************************
+       
+        // find rootT
+        rootTval = bt.findRoot(bt.root);
+
+        rootT = bt.findNode(rootTval);
 
         // get rootT to the top
         while (bt.childParentMapping.get(rootT) != null) {
@@ -475,20 +762,19 @@ public class BinaryTree {
         bt.printLevelOrder(bt.root);
         System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
 
-        // building left subtree AL
-        Node walker = bt.root.left;
-        // Node walkerRight = walker.right.right;
-        Node follower = walker;
-        Node countWalker = bt.root.left;
+        // ************** Building left subtree AL ************** 
+        walker = bt.root.left;
+        follower = walker;
+        countWalker = bt.root.left;
 
-        int countLeftForearm = 0;
+        countLeftForearm = 0;
         // find count of nodes in left forearm
         while (countWalker != null) {
             countLeftForearm += 1;
             countWalker = countWalker.right;
         }
         // then find height of left forearm using formula calculateH
-        int heightLeftForearm = (int) Math.floor(Math.log(countLeftForearm) / Math.log(2));
+        heightLeftForearm = (int) Math.floor(Math.log(countLeftForearm) / Math.log(2));
         countWalker = bt.root.left;
 
         // for i from 0 to height - 1
@@ -499,76 +785,52 @@ public class BinaryTree {
                 countLIteration += 1;
                 countWalker = countWalker.right;
             }
-            // alternate rotation policy
+
+            // Alternate Rotation Policy
 
             // only consider count - height nodes from top for rotation
-
-            // if value exceeds count - height, reinitialize walker and follower
             int countDummy = i;
             while (walker.right != null && countDummy < countLIteration) {
                 System.out.println("walker = " + walker.value);
                 System.out.println("follower = " + follower.value);
 
                 countDummy += 2;
-                if (countDummy >= countLIteration) {
+                if (countDummy > countLIteration) {
                     break;
                 }
-                walker = walker.right.right;
+                if(walker.right.right == null){
+                    walker = walker.right;
+                }
+                else{
+                    walker = walker.right.right;
+                }
                 bt.leftRotation(follower);
                 bt.printLevelOrder(bt.root);
                 follower = walker;
             }
+
+            // if value exceeds count - height, reinitialize walker and follower
             walker = bt.root.left;
             follower = walker;
             countWalker = bt.root.left;
         }
 
-        // while(walker.right != null || walker.right.right != null){
-        // System.out.println("walker = "+walker.value);
-        // System.out.println("follower = "+follower.value);
-
-        // walker = walker.right.right;
-        // bt.leftRotation(follower);
-        // bt.printLevelOrder(bt.root);
-        // follower = walker;
-        // }
-        // walker = bt.root.left;
-        // follower = walker;
-
-        // while (walkerRight != null) {
-        // while (walker != null && walker.right != null) {
-        // if (walkerRight != null) {
-        // walkerRight = walker.right.right;
-        // }
-        // if(walkerRight != null){
-        // bt.leftRotation(follower);
-        // }
-        // bt.printLevelOrder(bt.root);
-        // walker = walkerRight;
-        // follower = walker;
-        // }
-        // walker = bt.root.left;
-        // walkerRight = walker.right.right;
-        // follower = walker;
-        // }
-
         System.out.println("After left subtree generation:\n");
         bt.printLevelOrder(bt.root);
 
-        // building right subtree AL
+        // ************** Building right subtree AR ******************
         walker = bt.root.right;
-        // Node walkerRight = walker.right.right;
         follower = walker;
         countWalker = bt.root.right;
 
-        int countRightForearm = 0;
+        countRightForearm = 0;
         // find count of nodes in left forearm
         while (countWalker != null) {
             countRightForearm += 1;
             countWalker = countWalker.left;
         }
         // then find height of left forearm using formula calculateH
-        int heightRightForearm = (int) Math.floor(Math.log(countRightForearm) / Math.log(2));
+        heightRightForearm = (int) Math.floor(Math.log(countRightForearm) / Math.log(2));
         countWalker = bt.root.right;
 
         // for i from 0 to height - 1
@@ -579,11 +841,9 @@ public class BinaryTree {
                 countRIteration += 1;
                 countWalker = countWalker.left;
             }
-            // alternate rotation policy
 
+            // Alternate Rotation Policy
             // only consider count - height nodes from top for rotation
-
-            // if value exceeds count - height, reinitialize walker and follower
             int countDummy = i;
             while (walker.left != null && countDummy < countRIteration) {
                 System.out.println("walker = " + walker.value);
@@ -593,38 +853,29 @@ public class BinaryTree {
                 if (countDummy >= countRIteration) {
                     break;
                 }
-                walker = walker.left.left;
+                if(walker.left.left == null){
+                    walker = walker.left;
+                }
+                else{
+                    walker = walker.left.left;
+                }
                 bt.rightRotation(follower);
                 bt.printLevelOrder(bt.root);
                 follower = walker;
             }
+
+            // if value exceeds count - height, reinitialize walker and follower
             walker = bt.root.right;
             follower = walker;
             countWalker = bt.root.right;
         }
 
-        // // building right subtree AR
-        // walker = bt.root.right;
-        // Node walkerLeft = walker.left.left;
-        // follower = walker;
-
-        // while (walkerLeft != null) {
-        //     while (walker != null && walker.left != null) {
-        //         if (walkerLeft != null) {
-        //             walkerLeft = walker.left.left;
-        //         }
-        //         bt.rightRotation(follower);
-        //         walker = walkerLeft;
-        //         follower = walker;
-        //     }
-        //     walker = bt.root.right;
-        //     walkerLeft = walker.left.left;
-        //     follower = walker;
-        // }
 
         System.out.println("After right subtree generation:\n");
         bt.printLevelOrder(bt.root);
 
+
+        System.out.println("The number of rotations are: "+ bt.countRotations);
         // check if bt and t are identical (after A1)
 
         if (identicalTrees(bt.root, t.root)) {
